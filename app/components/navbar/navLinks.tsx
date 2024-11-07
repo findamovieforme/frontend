@@ -9,27 +9,17 @@ const moviesMenu = [
   { title: 'New Movies', href: '#', icon: <Sunset /> },
 ];
 
-const showsMenu = [
-  { title: 'Trending', href: '#', icon: <TrendingUp /> },
-  { title: 'Most Added', href: '#', icon: <Clapperboard /> },
-  { title: 'New Shows', href: '#', icon: <Sunset /> },
-];
+
 
 const NavLinks = () => (
-  <div className="flex items-center gap-4">
-    <NavItem href="#">Home</NavItem>
+  <div className="flex items-center gap-4 leading-none">
+    <NavItem href="/">Home</NavItem>
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Movies</NavigationMenuTrigger>
           <NavigationMenuContent>
             <DropdownMenu title="Movies" items={moviesMenu} />
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Shows</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <DropdownMenu title="Shows" items={showsMenu} />
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>

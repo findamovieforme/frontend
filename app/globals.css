@@ -82,3 +82,19 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide only the horizontal scrollbar */
+.scrollbar-hide {
+  overflow-x: auto;
+  overflow-y: visible;
+  /* Ensures vertical scroll remains */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar:horizontal {
+  display: none;
+  /* Chrome, Safari, and Opera */
+}
