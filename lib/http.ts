@@ -1,11 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuthStore } from '@/app/store';
+import { decodeJWT } from '@aws-amplify/auth';
 import axios from 'axios';
 import Router from 'next/router'; // Import the singleton Router object
 
+
+// Helper function to check if the token is expired
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded: any = decodeJWT(token); // Decode the token
+    console.log(decoded)
+    const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+    return decoded.payload.exp < currentTime; // Check if the token is expired
+  } catch (err) {
+    console.error('Error decoding token', err);
+    return true; // Treat as expired if decoding fails
+  }
+};
+
 const api = async (endpoint: string, options: any = {}) => {
-  // Get the idToken dynamically from the zustand store
-  const { idToken } = useAuthStore.getState();
+  const { idToken } = useAuthStore.getState(); // Access auth store
+
+  // If token is expired, redirect to login page
+  if (!idToken || isTokenExpired(idToken)) {
+    console.log('Token is expired or missing, redirecting to /login');
+    localStorage.removeItem('auth-storage');
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('Cognito')) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    window.location.href = '/login'; // Perform a hard page reload
+    return Promise.reject(new Error('Token expired or missing'));
+  }
 
   // Set up headers with the idToken
   const headers = {
@@ -20,12 +48,8 @@ const api = async (endpoint: string, options: any = {}) => {
     headers,
   });
 
-
-
   instance.interceptors.response.use(
-    (response) => {
-      return response;
-    },
+    (response) => response,
     async (error) => {
       const { response } = error;
 

@@ -1,46 +1,75 @@
-import { FC } from 'react';
+"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FC, useEffect, useState } from 'react';
+import api from '@/lib/http';
+import Link from 'next/link';
 
 interface Category {
-  title: string;
-  imageUrl: string;
+  id: number;
+  name: string;
+  posterPath: string;
 }
 
-const categories: Category[] = [
-  { title: 'Action', imageUrl: 'https://image.tmdb.org/t/p/w500/xRWht48C2V8XNfzvPehyClOvDni.jpg' },
-  { title: 'Anime', imageUrl: 'https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg' },
-  { title: 'Crime', imageUrl: 'https://image.tmdb.org/t/p/w500/tDexQyu6FWltcd0VhEDK7uib42f.jpg' },
-  { title: 'Family', imageUrl: 'https://image.tmdb.org/t/p/w500/xBHvZcjRiWyobQ9kxBhO6B2dtRI.jpg' },
-  { title: 'History', imageUrl: 'https://image.tmdb.org/t/p/w500/fTuxNlgEm04PPFkr1xfK94Jn8BW.jpg' },
-  { title: 'Indie', imageUrl: 'https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg' },
-  { title: 'Action', imageUrl: 'https://image.tmdb.org/t/p/w500/xRWht48C2V8XNfzvPehyClOvDni.jpg' },
-  { title: 'Anime', imageUrl: 'https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg' },
-  { title: 'Crime', imageUrl: 'https://image.tmdb.org/t/p/w500/tDexQyu6FWltcd0VhEDK7uib42f.jpg' },
-  { title: 'Family', imageUrl: 'https://image.tmdb.org/t/p/w500/xBHvZcjRiWyobQ9kxBhO6B2dtRI.jpg' },
-  { title: 'History', imageUrl: 'https://image.tmdb.org/t/p/w500/fTuxNlgEm04PPFkr1xfK94Jn8BW.jpg' },
-  { title: 'Indie', imageUrl: 'https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg' },
-
-];
-
-const CategoryCard: FC<Category> = ({ title, imageUrl }) => (
+const CategoryCard: FC<Category> = ({ name, posterPath }: { name: string, posterPath: string }) => (
   <div className="h-36 relative group overflow-hidden rounded-lg shadow-lg">
     <img
-      src={imageUrl}
-      alt={title}
+      src={posterPath}
+      alt={name}
       className="w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
     />
     <div className="absolute inset-0 bg-black opacity-30 group-hover:opacity-50 transition-opacity duration-300" />
     <h3 className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold z-10">
-      {title}
+      {name}
     </h3>
   </div>
 );
 
-const GenreGrid: FC = () => (
-  <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-    {categories.map((category, index) => (
-      <CategoryCard key={index} title={category.title} imageUrl={category.imageUrl} />
-    ))}
-  </div>
-);
+const GenreGrid: FC = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await api('/movies/genres');
+        const genres = response.data?.map((genre: any) => ({
+          id: genre.id,
+          name: genre.name,
+          posterPath: genre.posterPath,
+        }));
+        setCategories(genres);
+      } catch (err) {
+        console.error('Error fetching genres:', err);
+        setError('Failed to fetch genres.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
+  if (loading) {
+    return <p>Loading genres...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
+  return (
+    <div className="cursor-pointer grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      {categories.map((category, index) => (
+        <Link key={index} href={{
+          pathname: `/genre/${category.id}`, // Dynamic route
+          query: { genreTitle: category.name }, // Query parameter
+        }} >
+          <CategoryCard key={index} id={category.id} name={category.name} posterPath={category.posterPath} />
+        </Link>
+      ))}
+    </div>
+  );
+};
 
 export default GenreGrid;

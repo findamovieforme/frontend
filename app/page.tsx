@@ -18,12 +18,22 @@ const HomePage = () => {
 
   const { isAuthenticated, name: userName } = useAuthStore()
 
+
   useEffect(() => {
-    fetchData(isAuthenticated, userName).then(([updatedTrendingMovies, updatedMostLikedMovies]) => {
-      console.log(trendingMovies, 'trendingMovies');
+    async function fetchMovies() {
+      const [updatedTrendingMovies, updatedMostLikedMovies] = await fetchData();
+      setMostLikedMovies(updatedMostLikedMovies);
+      setTrendingMovies(updatedTrendingMovies);
+    }
+    fetchMovies();
+  }, [isAuthenticated, userName]);
+
+
+  useEffect(() => {
+    fetchData().then(([updatedTrendingMovies, updatedMostLikedMovies]) => {
       setTrendingMovies(updatedTrendingMovies);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setMostLikedMovies(updatedMostLikedMovies.map((movie: any) => movie.details));
+      setMostLikedMovies(updatedMostLikedMovies);
     });
   }, [isAuthenticated, userName]);
 
@@ -34,6 +44,7 @@ const HomePage = () => {
         title="Trending Movies"
         subtitle="Movies that are most popular across the world right now"
         movies={trendingMovies}
+
       />
       <MovieListWithSidePagination
         title="Most Liked Movies"
@@ -51,60 +62,14 @@ const HomePage = () => {
 
 export default HomePage;
 
-// Helper function to fetch data
-// Helper function to fetch data
-async function fetchData(isAuthenticated: boolean, userName: string | null) {
-  try {
+async function fetchData() {
     const [trendingResponse, mostLikedResponse] = await Promise.all([
       api('/movies/trending'),
       api('/users/mostAdded'),
     ]);
-
     const trendingMovies = await trendingResponse.data;
     const mostLikedMovies = await mostLikedResponse.data;
 
-    let userPreferences = [];
+  return [trendingMovies, mostLikedMovies.movies.map((movie: any) => movie.details)];
 
-    if (isAuthenticated) {
-      try {
-        const userResponse = await api(
-          `https://api.findamovie.me/users/preferences?user_id=${userName}`,
-          {
-            method: 'GET',
-            headers: {},
-          }
-        );
-        userPreferences = await userResponse.data.preferences;
-      } catch (error: any) {
-        if (error.response && error.response.status === 404) {
-          userPreferences = [];
-        } else {
-          throw error; // Re-throw other errors
-        }
-      }
-    }
-
-    // Extract movie IDs from user preferences
-    const likedMovieIds = new Set(userPreferences.map((pref: any) => pref.id));
-    // Add isLiked property to trendingMovies
-    const updatedTrendingMovies = trendingMovies.map((movie: any) => {
-      console.log(likedMovieIds.has(movie.id))
-      return {
-        ...movie,
-        isLiked: likedMovieIds.has(movie.id),
-      }
-    });
-
-    // Add isLiked property to mostLikedMovies
-    const updatedMostLikedMovies = mostLikedMovies.movies.map((movie: any) => ({
-      ...movie,
-      isLiked: likedMovieIds.has(movie.id),
-    }))
-
-
-    return [updatedTrendingMovies, updatedMostLikedMovies];
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return [[], []]; // Return empty arrays in case of error
-  }
 }

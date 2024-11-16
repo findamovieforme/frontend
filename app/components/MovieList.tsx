@@ -1,17 +1,12 @@
 import React from "react";
 import { Movie } from "./Movie"; // Import the Movie component
+import { MovieI } from "../interfaces";
 
-type MovieData = {
-  id: number;
-  title: string;
-  posterUrl: string;
-  seasonInfo?: string;
-  isLiked: boolean
-};
+
 
 type MovieListProps = {
   title: string;
-  movies: MovieData[];
+  movies: MovieI[];
   subtitle?: string;
 };
 
@@ -26,11 +21,7 @@ export function MovieList({ title, subtitle, movies }: MovieListProps) {
         {movies.map((movie) => (
           <Movie
             key={movie.id}
-            id={movie.id}
-            title={movie.title}
-            posterUrl={movie.posterUrl}
-            seasonInfo={movie.seasonInfo}
-            isLiked={false}
+            {...movie}
           />
         ))}
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,6 +7,9 @@ import NavigationBar from "@/app/components/navbar/navBar";
 import Image from "next/image";
 import api from "@/lib/http"; // Assuming api is set up as a reusable HTTP client
 import Link from "next/link";
+import { Heart } from "lucide-react";
+import { useAuthStore } from "@/app/store";
+
 
 interface MovieDetail {
   id: number;
@@ -33,6 +37,34 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
   const [movie, setMovie] = useState<MovieDetail | null>(null);
   const [similarMovies, setSimilarMovies] = useState<SimilarMovie[]>([]);
   const [loading, setLoading] = useState(true);
+  const { name: userId } = useAuthStore()
+  const [liked, setLiked] = useState(false);
+
+
+  let userPreferences = [];
+
+  useEffect(() => {
+    const fetchMovieDetails = async () => {
+      try {
+        const userResponse = await api(
+          `https://api.findamovie.me/users/preferences?user_id=${userId}`,
+          {
+            method: 'GET',
+            headers: {},
+          }
+        );
+        userPreferences = await userResponse.data.preferences;
+        setLiked(userPreferences.some((pref: any) => pref.id === movie?.id));
+      } catch (error) {
+        console.error("Error fetching movie details or recommendations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovieDetails();
+  }, [movie?.id]);
+
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -64,6 +96,88 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
   if (!movie) {
     return <div className="container mx-auto text-center py-10">Movie not found.</div>;
   }
+  // Function to toggle like state
+  const toggleLike = async () => {
+    setLiked((prevLiked) => !prevLiked);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedMovie: any = await api(`/movies/details?movieID=${movie.id}`)
+    if (!updatedMovie) {
+      return;
+    }
+
+    const updatePreference = async (updatedMovie: any, userId: string | null) => {
+      if (!userId) {
+        return;
+      }
+      const updatedMovieId = updatedMovie.id;
+
+      try {
+        // Fetch existing user preferences
+        const userResponse = await api(`https://api.findamovie.me/users/preferences?user_id=${userId}`, {
+          method: 'GET',
+          headers: {},
+        });
+
+        const userPreferences = await userResponse.data?.preferences || [];
+
+        let updatedPreferences;
+
+        if (!updatedMovie.isLiked) {
+          // Add the movie to preferences if it is liked
+          updatedPreferences = [
+            ...userPreferences,
+            { ...updatedMovie.data, isLiked: true },
+          ];
+        } else {
+          // Remove the movie from preferences if it is unliked
+          updatedPreferences = userPreferences.filter(
+            (movie: any) => movie.id !== updatedMovieId
+          );
+        }
+
+        // Update the preferences on the backend
+        await api("/users/preferences", {
+          method: "POST",
+          data: JSON.stringify({
+            user_id: userId,
+            movies: updatedPreferences,
+          }),
+        });
+
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          // Handle 404 - No preferences found, start with an empty array
+          const updatedPreferences = !updatedMovie.isLiked
+            ? [{ ...updatedMovie.data, isLiked: true }]
+            : [];
+
+          try {
+            // Send the updated preferences to the API
+            await api("/users/preferences", {
+              method: "POST",
+              data: JSON.stringify({
+                user_id: userId,
+                movies: updatedPreferences,
+              }),
+            });
+          } catch (postError) {
+            console.error("Error updating preferences on empty data:", postError);
+            rollbackLikeStatus();
+          }
+        } else {
+          console.error("Error fetching preferences:", error);
+          rollbackLikeStatus();
+        }
+      }
+    };
+
+    const rollbackLikeStatus = () => {
+      setLiked((prevLiked) => !prevLiked);
+    };
+
+    await updatePreference(updatedMovie, userId);
+  };
+
 
   return (
     <div className="container mx-auto">
@@ -80,7 +194,18 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
           />
         </div>
         <div className="w-full md:w-2/3">
-          <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
+          <h1 className="text-4xl font-bold mb-4">{movie.title}</h1> 
+          <button
+            onClick={toggleLike}
+            className="top-2 right-2 z-10 p-1 rounded-full bg-white bg-opacity-70 hover:bg-opacity-100 transition-colors"
+            aria-label={liked ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Heart
+              size={20}
+              className={liked ? "text-red-500" : "text-gray-500"} // Red if liked, gray if not
+              fill={liked ? "currentColor" : "none"} // Fill with red if liked
+            />
+          </button>
           <p className="text-gray-600 mb-4">{movie.release_date}</p>
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg font-semibold">IMDb Rating:</span>

@@ -32,7 +32,6 @@ export function MovieListWithSidePagination({
   movies,
 }: MovieListWithSidePaginationProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
@@ -69,15 +68,27 @@ export function MovieListWithSidePagination({
           ref={scrollContainerRef}
           className="flex overflow-x-auto space-x-4 scrollbar-hide"
         >
-          {movies?.map((movie) => (
-            <Movie
+          {movies?.map((movie) => {
+            if (!movie) return
+            return <Movie
               key={movie.id}
               id={movie.id}
               title={movie.title}
-              posterUrl={movie.poster_path}
+              poster_path={movie.poster_path}
+              release_date={movie.release_date}
               isLiked={movie.isLiked}
+              adult={movie.adult}
+              backdrop_path={movie.backdrop_path}
+              genre_ids={movie.genre_ids}
+              popularity={movie.popularity}
+              original_title={movie.original_title}
+              overview={movie.overview}
+              video={movie.video}
+              vote_average={movie.vote_average}
+              vote_count={movie.vote_count}
+
             />
-          ))}
+          })}
         </div>
 
         <button

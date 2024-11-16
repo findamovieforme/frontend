@@ -1,15 +1,12 @@
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
-import { TrendingUp, Clapperboard, Sunset } from 'lucide-react';
+import { TrendingUp, Clapperboard } from 'lucide-react';
 import NavItem from './navItem';
 import DropdownMenu from './dropDownMenu';
 
 const moviesMenu = [
-  { title: 'Trending', href: '#', icon: <TrendingUp /> },
-  { title: 'Most Added', href: '#', icon: <Clapperboard /> },
-  { title: 'New Movies', href: '#', icon: <Sunset /> },
+  { title: 'Trending', href: '/trending', icon: <TrendingUp /> },
+  { title: 'Most Added', href: '/most-liked', icon: <Clapperboard /> },
 ];
-
-
 
 const NavLinks = () => (
   <div className="flex items-center gap-4 leading-none">

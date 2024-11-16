@@ -8,18 +8,12 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination"; // Adjust the import path if necessary
+import { MovieI } from "../interfaces";
 
-type MovieData = {
-  id: number;
-  title: string;
-  posterUrl: string;
-  seasonInfo?: string;
-  isLiked: boolean
-};
 
 type MovieListWithFullPaginationProps = {
   title: string;
-  movies: MovieData[];
+  movies: MovieI[];
   subtitle?: string;
   itemsPerPage?: number;
 };
@@ -28,7 +22,7 @@ export function MovieListWithFullPagination({
   title,
   subtitle,
   movies,
-  itemsPerPage = 8, // Default to 8 movies per page
+  itemsPerPage = 20, // Default to 8 movies per page
 }: MovieListWithFullPaginationProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(movies.length / itemsPerPage);
