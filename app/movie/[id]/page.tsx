@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import Footer1 from "@/app/components/Footer";
 import NavigationBar from "@/app/components/navbar/navBar";
 import Image from "next/image";
-import api from "@/lib/http"; // Assuming api is set up as a reusable HTTP client
+import api from "@/lib/http";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useAuthStore } from "@/app/store";
+import PlayTrailer from "@/app/components/PlayTrailer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MovieDetail {
   id: number;
@@ -20,6 +22,7 @@ interface MovieDetail {
   release_date: string;
   genres: { id: number; name: string }[];
   imdb_id: string;
+  trailerKey?: string;
 }
 
 interface SimilarMovie {
@@ -39,12 +42,14 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
   const { name: userId, isAuthenticated } = useAuthStore();
   const [liked, setLiked] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
         const { data: movieDetails } = await api(`/movies/details?movieID=${params.id}`);
         setMovie(movieDetails);
+        setTrailerKey(movieDetails.trailer_key);
 
         if (isAuthenticated) {
           const { data: recommendations } = await api("/movies/recommendations", {
@@ -76,7 +81,7 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
       } catch (error) {
         console.error("Error fetching user preferences:", error);
       }
-    }
+    };
 
     fetchUserPreferences();
   }, [params.id, isAuthenticated]);
@@ -91,39 +96,21 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
     if (!movie) {
       return;
     }
-    const updatedMovie: any = await api(`/movies/details?movieID=${movie.id}`)
-    const updatedMovieId = updatedMovie.id;
-    const rollbackLikeStatus = () => {
-      setLiked((prevLiked) => !prevLiked);
-    };
 
     try {
-      // Fetch existing user preferences
-      const userResponse = await api(`https://api.findamovie.me/users/preferences?user_id=${userId}`, {
-        method: 'GET',
-        headers: {},
+      const userResponse = await api(`/users/preferences?user_id=${userId}`, {
+        method: "GET",
       });
 
-      const userPreferences = await userResponse.data?.preferences || [];
-
-
+      const userPreferences = userResponse.data?.preferences || [];
       let updatedPreferences;
 
       if (!liked) {
-        console.log('liking movie')
-        // Add the movie to preferences if it is liked
-        updatedPreferences = [
-          ...userPreferences,
-          updatedMovie.data,
-        ];
+        updatedPreferences = [...userPreferences, movie];
       } else {
-        // Remove the movie from preferences if it is unliked
-        updatedPreferences = userPreferences.filter(
-          (movie: any) => movie.id == updatedMovieId
-        );
+        updatedPreferences = userPreferences.filter((pref: any) => pref.id !== movie.id);
       }
 
-      // Update the preferences on the backend
       await api("/users/preferences", {
         method: "POST",
         data: JSON.stringify({
@@ -131,41 +118,70 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
           movies: updatedPreferences,
         }),
       });
-
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        // Handle 404 - No preferences found, start with an empty array
-        const updatedPreferences = !updatedMovie.isLiked
-          ? [{ ...updatedMovie.data, isLiked: true }]
-          : [];
-
-        try {
-          // Send the updated preferences to the API
-          await api("/users/preferences", {
-            method: "POST",
-            data: JSON.stringify({
-              user_id: userId,
-              movies: updatedPreferences,
-            }),
-          });
-        } catch (postError) {
-          console.error("Error updating preferences on empty data:", postError);
-          rollbackLikeStatus();
-        }
-      } else {
-        console.error("Error fetching preferences:", error);
-        rollbackLikeStatus();
-      }
+    } catch (error) {
+      console.error("Error updating preferences:", error);
     }
-
   };
 
   if (loading) {
-    return <div className="container mx-auto text-center py-10">Loading...</div>;
+    return (
+      <div className="container mx-auto">
+        <NavigationBar />
+
+        <div className="py-10">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-100 text-red-800 px-4 py-2 mb-4 rounded">
+              {error}
+            </div>
+          )}
+
+          {/* Skeleton for Movie Details */}
+          <div className="flex flex-col md:flex-row gap-8 mb-8">
+            <div className="w-full md:w-1/3">
+              <Skeleton className="rounded-lg shadow-lg w-full h-[750px]" />
+            </div>
+            <div className="w-full md:w-2/3">
+              <Skeleton className="h-10 w-3/4 mb-4" /> {/* Title */}
+              <Skeleton className="h-6 w-1/3 mb-4" /> {/* Release Date */}
+              <div className="flex items-center gap-2 mb-4">
+                <Skeleton className="h-6 w-1/4" /> {/* IMDb Rating */}
+                <Skeleton className="h-6 w-1/4" /> {/* Trailer Button */}
+              </div>
+              <Skeleton className="h-32 w-full mb-4" /> {/* Overview */}
+              <Skeleton className="h-6 w-1/4" /> {/* IMDb Link */}
+            </div>
+          </div>
+
+          {/* Skeleton for Similar Movies */}
+          <div>
+            <Skeleton className="h-8 w-1/2 mb-6" /> {/* Similar Movies Heading */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="text-center">
+                  <Skeleton className="rounded-lg shadow-md w-full h-[450px]" /> {/* Movie Poster */}
+                  <Skeleton className="h-6 w-full mt-2" /> {/* Movie Title */}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <Footer1 />
+      </div>
+    );
   }
 
   if (!movie) {
-    return <div className="container mx-auto text-center py-10">Movie not found.</div>;
+    return (
+      <div className="container mx-auto text-center py-10">
+        <NavigationBar />
+        <div className="py-10">
+          <p>Movie not found.</p>
+        </div>
+        <Footer1 />
+      </div>
+    );
   }
 
   return (
@@ -189,7 +205,8 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
           />
         </div>
         <div className="w-full md:w-2/3">
-          <h1 className="text-4xl font-bold mb-4">{movie.title}
+          <h1 className="text-4xl font-bold mb-4">
+            {movie.title}
             <button
               onClick={toggleLike}
               className="inline-block ml-3 z-10 p-1 rounded-full bg-white bg-opacity-70 hover:bg-opacity-100 transition-colors"
@@ -197,20 +214,23 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
             >
               <Heart
                 size={32}
-                className={liked ? "text-red-500" : "text-gray-500"} // Red if liked, gray if not
-                fill={liked ? "currentColor" : "none"} // Fill with red if liked
+                className={liked ? "text-red-500" : "text-gray-500"}
+                fill={liked ? "currentColor" : "none"}
               />
             </button>
           </h1>
-
           <p className="text-gray-600 mb-4">{movie.release_date}</p>
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg font-semibold">IMDb Rating:</span>
             <span className="text-yellow-500 font-bold">{movie.vote_average}</span>
+            {trailerKey && (
+              <PlayTrailer trailerKey={trailerKey} movieTitle={movie.title} />
+            )}
           </div>
           <p className="text-gray-800 mb-4">{movie.overview}</p>
+
           <a
-            href={`https://www.imdb.com/title/${movie.id}`}
+            href={`https://www.imdb.com/title/${movie.imdb_id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
@@ -241,7 +261,11 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
           </div>
         ) : (
           <p className="text-gray-700">
-            Please <Link href="/login" className="text-blue-500 hover:underline">login</Link> to see movie recommendations similar to this movie.
+              Please{" "}
+              <Link href="/login" className="text-blue-500 hover:underline">
+                login
+              </Link>{" "}
+              to see movie recommendations similar to this movie.
           </p>
         )}
       </div>

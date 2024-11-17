@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import NavigationBar from './navbar/navBar';
+import Link from 'next/link';
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,11 +40,11 @@ export default function AuthForm({ isSignUp = false }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const { setTokens } = useAuthStore();
 
-  const router = useRouter(); // Initialize the router for navigation
+  const router = useRouter(); 
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null); 
 
     if (isSignUp) {
       await signUpUser(email, password, firstName, lastName);
@@ -54,7 +55,7 @@ export default function AuthForm({ isSignUp = false }: AuthFormProps) {
 
   const saveCurrentLoggin = async () => {
     const session = await fetchAuthSession();
-    const idToken = session.tokens?.idToken?.toString(); // Access this from the session object in your code
+    const idToken = session.tokens?.idToken?.toString(); 
     const accessToken = session.tokens?.accessToken?.toString();
 
     if (accessToken && idToken) {
@@ -63,11 +64,11 @@ export default function AuthForm({ isSignUp = false }: AuthFormProps) {
   }
   const signUpUser = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const strippedUsername = email.split('@')[0]; // Strip off domain to use as unique username
+      const strippedUsername = email.split('@')[0]; 
 
 
       await signUp({
-        username: strippedUsername, // Cognito-compatible username
+        username: strippedUsername,
         password: password,
         options: {
           userAttributes: {
@@ -178,11 +179,6 @@ export default function AuthForm({ isSignUp = false }: AuthFormProps) {
                     <div className="grid gap-2">
                       <div className="flex justify-between">
                         <Label htmlFor="password">Password</Label>
-                        {!isSignUp && (
-                          <a href="#" className="text-sm underline">
-                            Forgot password
-                          </a>
-                        )}
                       </div>
                       <Input
                         id="password"
@@ -203,16 +199,16 @@ export default function AuthForm({ isSignUp = false }: AuthFormProps) {
                 {isSignUp ? (
                   <>
                     <p>Already have an account?</p>
-                    <a href="#" className="underline">
+                    <Link href="/login" className="underline">
                       Log In
-                    </a>
+                    </Link>
                   </>
                 ) : (
                   <>
                     <p>Don&apos;t have an account yet?</p>
-                    <a href="#" className="underline">
+                      <Link href="/signup" className="underline">
                       Sign Up
-                    </a>
+                      </Link>
                   </>
                 )}
               </div>

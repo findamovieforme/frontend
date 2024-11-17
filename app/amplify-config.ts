@@ -17,7 +17,6 @@ const AmplifyConfig = {
         redirectSignOut: 'https://findamovie.me/logout', // Replace with your app's signout URL
         responseType: 'code', // `code` for Authorization Code Grant or `token` for Implicit Grant
         options: {
-          // Enable social providers
           facebook: true,
         },
       },

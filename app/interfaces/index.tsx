@@ -7,7 +7,7 @@ export type MovieI = {
   genre_ids: number[];
   popularity: number;
   poster_path: string;
-  release_date: string; // ISO format "YYYY-MM-DD"
+  release_date: string; 
   title: string;
   overview: string;
   video: boolean;

@@ -35,7 +35,7 @@ export function SimilarMovieGrid({
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: -300, // Adjust scroll amount as needed
+        left: -300, 
         behavior: "smooth",
       });
     }
@@ -44,7 +44,7 @@ export function SimilarMovieGrid({
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: 300, // Adjust scroll amount as needed
+        left: 300, 
         behavior: "smooth",
       });
     }

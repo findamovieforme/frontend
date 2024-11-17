@@ -24,21 +24,20 @@ function ConfirmSignUpSkeleton() {
   const handleConfirm = async () => {
     try {
       if (!email) throw Error("Email missing");
-      await confirmSignUp({ confirmationCode: code, username: email.split('@')[0] }); // Strip off domain to use as unique username
-      setSuccess(true); // Set success state to display the confirmation message
+      await confirmSignUp({ confirmationCode: code, username: email.split('@')[0] });
+      setSuccess(true); 
     } catch (error: unknown) {
       setError("Error confirming sign-up: " + error);
       console.error("Error confirming sign-up:", error);
     }
   };
 
-  // Countdown effect for redirection
   useEffect(() => {
     if (success && countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else if (success && countdown === 0) {
-      router.push('/login'); // Redirect to login page after countdown
+      router.push('/login'); 
     }
   }, [success, countdown, router]);
 

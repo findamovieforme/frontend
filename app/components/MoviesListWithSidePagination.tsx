@@ -9,23 +9,23 @@ import { Movie } from "./Movie";
 
 type MovieListWithSidePaginationProps = {
   title: string;
-  movies?: MovieI[] | null; // Optional to handle loading state
+  movies?: MovieI[] | null; 
   subtitle?: string;
-  loading?: boolean; // New prop to indicate loading state
+  loading?: boolean;
 };
 
 export function MovieListWithSidePagination({
   title,
   subtitle,
-  movies = null, // Default empty array
-  loading = false, // Default loading state
+  movies = null,
+  loading = false,
 }: MovieListWithSidePaginationProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: -300, // Adjust scroll amount as needed
+        left: -300, 
         behavior: "smooth",
       });
     }
@@ -34,7 +34,7 @@ export function MovieListWithSidePagination({
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: 300, // Adjust scroll amount as needed
+        left: 300, 
         behavior: "smooth",
       });
     }
@@ -62,7 +62,7 @@ export function MovieListWithSidePagination({
             Array.from({ length: 8 }).map((_, index) => (
               <Skeleton key={index} className="h-40 w-28 rounded-md" />
             ))
-            : // Render Movies
+            :
             movies?.map((movie) => {
               if (!movie) return null;
               return <Movie key={movie.id} {...movie} />;

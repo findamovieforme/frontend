@@ -31,19 +31,18 @@ const HomePage = () => {
 
       <AISearchBox />
 
-      {/* Pass loading state to MovieListWithSidePagination */}
       <MovieListWithSidePagination
         title="Trending Movies"
         subtitle="Movies that are most popular across the world right now"
         movies={trendingMovies}
-        loading={!trendingMovies} // Skeleton shown until data is loaded
+        loading={!trendingMovies}
       />
 
       <MovieListWithSidePagination
         title="Most Liked Movies"
         subtitle="Movies most liked by findamovie users"
         movies={mostLikedMovies}
-        loading={!mostLikedMovies} // Skeleton shown until data is loaded
+        loading={!mostLikedMovies}
       />
 
       <div className="mt-10">

@@ -8,10 +8,7 @@ const sections = [
     links: [
       { name: 'Overview', href: '#' },
       { name: 'Pricing', href: '#' },
-      { name: 'Marketplace', href: '#' },
       { name: 'Features', href: '#' },
-      { name: 'Integrations', href: '#' },
-      { name: 'Pricing', href: '#' },
     ],
   },
   {
@@ -20,7 +17,6 @@ const sections = [
       { name: 'About', href: '#' },
       { name: 'Team', href: '#' },
       { name: 'Blog', href: '#' },
-      { name: 'Careers', href: '#' },
       { name: 'Contact', href: '#' },
       { name: 'Privacy', href: '#' },
     ],

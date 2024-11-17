@@ -50,7 +50,7 @@ const MostLikedPage = () => {
       <MovieListWithFullPagination
         title={`${genreTitle} Movies`}
         movies={movies}
-        subtitle={`${genreTitle} Movies that are most liked by our users`}
+          subtitle={`Movies that are most liked by our users`}
         />}
       <Footer1 />
     </div>

@@ -20,12 +20,12 @@ const SearchBar: React.FC = () => {
       if (!searchTerm) {
         setSearchResults([]);
         setLoading(false);
-        setIsPopoverOpen(false); // Close popover if search term is empty
+        setIsPopoverOpen(false); 
         return;
       }
 
       setLoading(true);
-      setIsPopoverOpen(true); // Open popover when search begins
+      setIsPopoverOpen(true);
       try {
         const { data } = await api(`/movies/search?movieName=${searchTerm}`);
         setSearchResults(data || []);
@@ -46,23 +46,23 @@ const SearchBar: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setIsPopoverOpen(true); // Ensure popover opens when typing starts
+    setIsPopoverOpen(true);
   };
 
   const handleResultClick = (movieId: number) => {
     setSearchTerm("");
-    setIsPopoverOpen(false); // Close popover on selection
+    setIsPopoverOpen(false); 
     router.push(`/movie/${movieId}`);
   };
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}> {/* Control popover visibility */}
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}> 
       <PopoverTrigger asChild>
         <input
           type="text"
           value={searchTerm}
           onChange={handleSearchChange}
-          onFocus={() => setIsPopoverOpen(true)} // Open popover on focus
+          onFocus={() => setIsPopoverOpen(true)}
           placeholder="Search movies..."
           className="px-4 py-2 border rounded-lg text-gray-800 w-64"
         />

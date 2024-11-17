@@ -13,7 +13,7 @@ const AISearchBox = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recommendedMovie, setRecommendedMovie]: any = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { isAuthenticated } = useAuthStore(); // Check user authentication
+  const { isAuthenticated } = useAuthStore(); 
 
   const handleSearch = async () => {
     console.log("Search triggered with query:", searchQuery);
@@ -25,14 +25,13 @@ const AISearchBox = () => {
           prompt: searchQuery,
         }),
       });
-      setRecommendedMovie(response.data); // Assuming the API returns a single movie recommendation
+      setRecommendedMovie(response.data);
     } catch (error) {
       console.error("Error fetching recommendation:", error);
       setRecommendedMovie(null);
     }
   };
 
-  // Render a message if the user is not authenticated
   if (!isAuthenticated) {
     return (
       <motion.div
@@ -42,7 +41,7 @@ const AISearchBox = () => {
         transition={{ duration: 0.5 }}
       >
         <p className="text-lg">
-          Please <Link href="/login" className="font-bold underline">authenticate</Link> to use our AI-powered recommendation search. <FaWandMagicSparkles className='inline' size={24} />
+          Please <Link href="/login" className="font-bold underline">login</Link> to use our AI-powered recommendation search. <FaWandMagicSparkles className='inline' size={24} />
         </p>
       </motion.div>
     );
@@ -50,7 +49,6 @@ const AISearchBox = () => {
 
   return (
     <>
-      {/* AI Search Box */}
       <motion.div
         className="p-6 flex items-center rounded-lg shadow-md bg-white text-black mb-8"
         initial={{ opacity: 0, y: -10 }}
