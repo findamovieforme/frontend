@@ -60,7 +60,7 @@ const GenreGrid: FC = () => {
 
   return (
     <div className="cursor-pointer grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      {categories.map((category, index) => (
+      {categories?.map((category, index) => (
         <Link key={index} href={{
           pathname: `/genre/${category.id}`, // Dynamic route
           query: { genreTitle: category.name }, // Query parameter

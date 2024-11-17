@@ -6,8 +6,11 @@ import Router from 'next/router'; // Import the singleton Router object
 
 
 // Helper function to check if the token is expired
-const isTokenExpired = (token: string): boolean => {
+const isTokenExpired = (token: string | null): boolean => {
   try {
+    if (!token) {
+      return false; // Treat as not expired if token is missing
+    }
     const decoded: any = decodeJWT(token); // Decode the token
     const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
     return decoded.payload.exp < currentTime; // Check if the token is expired
@@ -19,9 +22,8 @@ const isTokenExpired = (token: string): boolean => {
 
 const api = async (endpoint: string, options: any = {}) => {
   const { idToken } = useAuthStore.getState(); // Access auth store
-
   // If token is expired, redirect to login page
-  if (!idToken || isTokenExpired(idToken)) {
+  if (isTokenExpired(idToken)) {
     console.log('Token is expired or missing, redirecting to /login');
     localStorage.removeItem('auth-storage');
     Object.keys(localStorage).forEach((key) => {

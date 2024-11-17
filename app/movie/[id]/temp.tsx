@@ -109,17 +109,16 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
 
       let updatedPreferences;
 
-      if (!liked) {
-        console.log('liking movie')
+      if (!updatedMovie.isLiked) {
         // Add the movie to preferences if it is liked
         updatedPreferences = [
           ...userPreferences,
-          updatedMovie.data,
+          { ...updatedMovie.data, isLiked: true },
         ];
       } else {
         // Remove the movie from preferences if it is unliked
         updatedPreferences = userPreferences.filter(
-          (movie: any) => movie.id == updatedMovieId
+          (movie: any) => movie.id !== updatedMovieId
         );
       }
 
