@@ -20,17 +20,17 @@ type Movie = {
   isLiked: boolean;
 }
 
-type MovieListWithSidePaginationProps = {
+type SimilarMovieGridProps = {
   title: string;
   movies: Movie[];
   subtitle?: string;
 };
 
-export function MovieListWithSidePagination({
+export function SimilarMovieGrid({
   title,
   subtitle,
   movies,
-}: MovieListWithSidePaginationProps) {
+}: SimilarMovieGridProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollLeft = () => {
     if (scrollContainerRef.current) {

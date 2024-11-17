@@ -1,63 +1,47 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import api from "@/lib/http";
-import NavigationBar from "@/app/components/navbar/navBar";
-import Footer1 from "@/app/components/Footer";
-import { MovieI } from "@/app/interfaces";
+import { MovieListSkeleton } from "../components/skeletons/MovieListSkeleton";
+import NavigationBar from "../components/navbar/navBar";
+import Footer1 from "../components/Footer";
 import { MovieListWithFullPagination } from "../components/MovieListWithFullPagination";
 
-
-
-const GenrePage = () => {
-  const genreTitle = 'Trending'
-  const [movies, setMovies] = useState<MovieI[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
+const TrendingPage = () => {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchTrendingMovies = async () => {
       try {
-        setLoading(true);
-        const response = await api(`/movies/trending`);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const fetchedMovies = await response.data
-
-        setMovies(fetchedMovies || []);
+        const response = await api("/movies/trending");
+        setMovies(response.data || []);
       } catch (err) {
-        console.error("Error fetching movies:", err);
-        setError("Failed to fetch movies. Please try again later.");
+        console.error("Error fetching trending movies:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMovies();
+    fetchTrendingMovies();
   }, []);
-
-  if (loading) {
-    return <p>Loading movies...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
 
   return (
     <div className="container mx-auto">
       <NavigationBar />
 
-      {/* <h1 className="text-2xl font-bold mb-4">{genreTitle} Movies</h1> */}
-      <MovieListWithFullPagination
-        title={`${genreTitle} Movies`}
-        movies={movies}
-        subtitle={`${genreTitle} Movies that are trending across the world right now`}
-      />
-      <Footer1 />
+      {loading ? (
+        <MovieListSkeleton title="Trending Movies" />
+      ) : (
+        <MovieListWithFullPagination
+            title="Trending Movies"
+            movies={movies}
+            subtitle="Movies that are trending globally right now."
+          />
+      )}
 
+      <Footer1 />
     </div>
   );
 };
 
-
-export default GenrePage;
+export default TrendingPage;

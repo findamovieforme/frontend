@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/page.js
-"use client";
+'use client';
 import "@aws-amplify/ui-react/styles.css";
 import Footer1 from "./components/Footer";
 import GenreGrid from "./components/Genres";
@@ -12,8 +11,8 @@ import { useAuthStore } from "./store";
 import AISearchBox from "./components/GPTRecommendation";
 
 const HomePage = () => {
-  const [trendingMovies, setTrendingMovies] = useState([]);
-  const [mostLikedMovies, setMostLikedMovies] = useState([]);
+  const [trendingMovies, setTrendingMovies] = useState(null); // Start with null for loading state
+  const [mostLikedMovies, setMostLikedMovies] = useState(null);
 
   const { isAuthenticated, name: userName } = useAuthStore();
 
@@ -26,26 +25,32 @@ const HomePage = () => {
     fetchMovies();
   }, [isAuthenticated, userName]);
 
-
   return (
     <main className="container mx-auto">
       <NavigationBar />
 
       <AISearchBox />
+
+      {/* Pass loading state to MovieListWithSidePagination */}
       <MovieListWithSidePagination
         title="Trending Movies"
         subtitle="Movies that are most popular across the world right now"
         movies={trendingMovies}
+        loading={!trendingMovies} // Skeleton shown until data is loaded
       />
+
       <MovieListWithSidePagination
         title="Most Liked Movies"
         subtitle="Movies most liked by findamovie users"
         movies={mostLikedMovies}
+        loading={!mostLikedMovies} // Skeleton shown until data is loaded
       />
+
       <div className="mt-10">
         <h2 className="text-xl font-bold mb-4">Browse By Genre</h2>
+        <GenreGrid />
       </div>
-      <GenreGrid />
+
       <Footer1 />
     </main>
   );

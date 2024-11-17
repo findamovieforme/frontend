@@ -1,7 +1,5 @@
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
 import { TrendingUp, Clapperboard } from 'lucide-react';
 import NavItem from './navItem';
-import DropdownMenu from './dropDownMenu';
 
 const moviesMenu = [
   { title: 'Trending', href: '/trending', icon: <TrendingUp /> },
@@ -9,18 +7,13 @@ const moviesMenu = [
 ];
 
 const NavLinks = () => (
-  <div className="flex items-center gap-4 leading-none">
+  <div className=" mt-2 flex items-end gap-4 leading-none">
     <NavItem href="/">Home</NavItem>
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Movies</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <DropdownMenu title="Movies" items={moviesMenu} />
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    {moviesMenu.map((item) => (
+      <NavItem key={item.title} href={item.href} icon={item.icon}>
+        {item.title}
+      </NavItem>
+    ))}
   </div>
 );
 
