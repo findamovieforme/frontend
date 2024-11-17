@@ -72,7 +72,20 @@ export function MovieListWithSidePagination({
             if (!movie) return
             return <Movie
               key={movie.id}
-              {...movie}
+              id={movie.id}
+              title={movie.title}
+              poster_path={movie.poster_path}
+              release_date={movie.release_date}
+              isLiked={movie.isLiked}
+              adult={movie.adult}
+              backdrop_path={movie.backdrop_path}
+              genre_ids={movie.genre_ids}
+              popularity={movie.popularity}
+              original_title={movie.original_title}
+              overview={movie.overview}
+              video={movie.video}
+              vote_average={movie.vote_average}
+              vote_count={movie.vote_count}
             />
           })}
         </div>

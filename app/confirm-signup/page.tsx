@@ -70,7 +70,6 @@ function ConfirmSignUpSkeleton() {
                       required
                     /> */}
                     <InputOTP onChange={(e) => {
-                      console.log(e)
                       setCode(e)
                     }} maxLength={6}>
                       <InputOTPGroup>

@@ -9,7 +9,6 @@ import Router from 'next/router'; // Import the singleton Router object
 const isTokenExpired = (token: string): boolean => {
   try {
     const decoded: any = decodeJWT(token); // Decode the token
-    console.log(decoded)
     const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
     return decoded.payload.exp < currentTime; // Check if the token is expired
   } catch (err) {
