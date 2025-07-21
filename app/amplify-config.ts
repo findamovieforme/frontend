@@ -1,8 +1,8 @@
 const AmplifyConfig = {
   Auth: {
     Cognito: {
-      userPoolClientId: '65a9tu59er2c4ulldt82gi9pc2',
-      userPoolId: 'us-east-2_Np0K9PFP6',
+      userPoolClientId: '3c0menbugs4qj1ej5lmknj1b6',
+      userPoolId: 'us-east-1_OnlBMR2Mn',
       allowGuestAccess: false,
       signUpVerificationMethod: 'code',
       authenticationFlowType: 'USER_PASSWORD_AUTH',

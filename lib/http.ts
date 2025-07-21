@@ -24,7 +24,6 @@ const api = async (endpoint: string, options: any = {}) => {
   const { idToken } = useAuthStore.getState(); // Access auth store
   // If token is expired, redirect to login page
   if (isTokenExpired(idToken)) {
-    console.log('Token is expired or missing, redirecting to /login');
     localStorage.removeItem('auth-storage');
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith('Cognito')) {
@@ -32,18 +31,16 @@ const api = async (endpoint: string, options: any = {}) => {
       }
     });
 
-    window.location.href = '/login'; // Perform a hard page reload
+    window.location.href = '/login';
     return Promise.reject(new Error('Token expired or missing'));
   }
 
-  // Set up headers with the idToken
   const headers = {
     Authorization: `Bearer ${idToken}`,
     'Content-Type': 'application/json',
-    ...options.headers, // Merge with any additional headers provided
+    ...options.headers,
   };
 
-  // Create an axios instance for this request
   const instance = axios.create({
     baseURL: 'https://api.findamovie.me',
     headers,
