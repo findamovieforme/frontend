@@ -1,6 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Overview
 
-## Getting Started
+Movie recommendation system built using **Next.js** and **Tailwind CSS**.  
+It uses the **TMDB API** to fetch movie data, and a Go (Gin) backend to generate recommendations and serve movie details through a set of microservices.
+
+The whole stack is deployed on **AWS** using infrastructure-as-code with **Terraform**:
+
+- **VPC & Networking**: Custom VPC with public/private subnets and security groups.
+- **Compute**: An **ECS cluster on EC2** (capacity provider + Auto Scaling Group) running:
+  - `movies-service` (Go) for TMDB integration and recommendations.
+  - `users-service` (Go) for user-related APIs.
+- **Load Balancing**: An **Application Load Balancer (ALB)** routing traffic to the ECS services.
+- **Data**: **DynamoDB** (e.g. `UserPreferences` table) for storing user preferences.
+- **Observability**: **CloudWatch Logs** for both backend services.
+
+The frontend talks to these AWS-hosted services via REST APIs exposed through the ALB.
+
+## Getting Started (Frontend)
 
 First, run the development server:
 
@@ -14,26 +29,9 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Make sure the backend services (`movies-service`, `users-service`) are running locally or reachable on your AWS environment for the full experience (search, recommendations, etc.).
 
 
 
@@ -48,3 +46,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
  
+
+
+
+
+
+

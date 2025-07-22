@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MovieRec",
+  title: "Findamovie",
   description: "Find your next favorite movi e",
 };
 

@@ -42,7 +42,7 @@ const api = async (endpoint: string, options: any = {}) => {
   };
 
   const instance = axios.create({
-    baseURL: 'https://api.findamovie.me',
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? '',
     headers,
   });
 

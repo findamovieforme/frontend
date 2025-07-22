@@ -99,7 +99,7 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
 
     let userResponse: any;
     try {
-      const userResponse = await api(`/users/preferences?user_id=${userId}`, {
+      userResponse = await api(`/users/preferences?user_id=${userId}`, {
         method: "GET",
       });
     } catch (error) {
@@ -233,6 +233,24 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
             )}
           </div>
           <p className="text-gray-800 mb-4">{movie.overview}</p>
+
+          {movie.genres && movie.genres.length > 0 && (
+            <div className="mb-4">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                Genres
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {movie.genres.map((genre) => (
+                  <span
+                    key={genre.id}
+                    className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-gray-700"
+                  >
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <a
             href={`https://www.imdb.com/title/${movie.imdb_id}`}

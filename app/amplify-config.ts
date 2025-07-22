@@ -1,8 +1,10 @@
+/// <reference types="node" />
+
 const AmplifyConfig = {
   Auth: {
     Cognito: {
-      userPoolClientId: '3c0menbugs4qj1ej5lmknj1b6',
-      userPoolId: 'us-east-1_OnlBMR2Mn',
+      userPoolClientId: process.env.NEXT_PUBLIC_APP_CLIENT_ID ?? '',
+      userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID ?? '',
       allowGuestAccess: false,
       signUpVerificationMethod: 'code',
       authenticationFlowType: 'USER_PASSWORD_AUTH',
@@ -11,11 +13,11 @@ const AmplifyConfig = {
         password: 'true',
       },
       oauth: {
-        domain: 'https://auth.findamovie.me', // Your Cognito domain
+        domain: process.env.NEXT_PUBLIC_COGNITO_OAUTH_DOMAIN ?? '',
         scope: ['email', 'profile', 'openid'],
-        redirectSignIn: 'https://findamovie.me/dashboard', // Replace with your app's URL
-        redirectSignOut: 'https://findamovie.me/logout', // Replace with your app's signout URL
-        responseType: 'code', // `code` for Authorization Code Grant or `token` for Implicit Grant
+        redirectSignIn: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/dashboard`,
+        redirectSignOut: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/logout`,
+        responseType: 'code',
         options: {
           facebook: true,
         },

@@ -1,4 +1,7 @@
 node_modules
+.env
+.env.local
+.env*.local
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
