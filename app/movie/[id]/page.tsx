@@ -97,12 +97,17 @@ const MovieDetailPage = ({ params }: MovieDetailPageProps) => {
       return;
     }
 
+    let userResponse: any;
     try {
       const userResponse = await api(`/users/preferences?user_id=${userId}`, {
         method: "GET",
       });
+    } catch (error) {
+      console.error("Error fetching user preferences:", error);
+    }
 
-      const userPreferences = userResponse.data?.preferences || [];
+    try {
+      const userPreferences = userResponse?.data?.preferences || [];
       let updatedPreferences;
 
       if (!liked) {
